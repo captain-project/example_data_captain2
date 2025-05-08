@@ -72,8 +72,8 @@ risk_weights = -64 -32 -16 -8 -1
 min_protected_cells = None
 
 [files]
-data_dir = /Users/dsilvestro/Desktop/Captain2.0/example_data_v2
-models_dir = /Users/dsilvestro/Desktop/Captain2.0/example_data_v2
+data_dir = full_path/example_data_v2
+models_dir = full_path/example_data_v2
 env_data_dir = environmental_layers
 sdm_data_dir = present_habitat_suitability
 future_sdm_data_dir = future_habitat_suitability
