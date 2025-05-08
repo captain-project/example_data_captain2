@@ -18,7 +18,6 @@ time_to_future_suitability = 70
 # if False: only prevent not-allowed cells through budget
 use_cost = False 
 do_plots = False
-# if false save them as png
 plot_env_states = False
 
 [policy] 
