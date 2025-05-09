@@ -9,14 +9,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 np.set_printoptions(suppress=True, precision=3)
 import captain as cn
-# import seaborn as sns
-# import matplotlib.pyplot as plt
 from captain.utilities import empirical_data_parser as cn_util
 from captain.utilities import sdm_utils as sdm_utils
 from captain.biodivsim import SimGrid as cn_sim_grid
-from captain.utilities import misc as cn_misc
-from captain.utilities.misc import parse_str
-# import rioxarray as rxr
+from captain.utilities.misc import parse_str, get_nn_params_from_file
 import sparse
 import argparse
 import configparser
@@ -395,10 +391,10 @@ if config["general"]["run_mode"] == "train":
 
     if parse_str(config["general"]["fine_tune"]):
         trained_model_file = os.path.join(models_wd, config["files"]["model_file_name"])
-        wNN_params = cn_misc.get_nn_params_from_file(trained_model_file,
-                                                     load_best_epoch=False,
-                                                     sample_from_iteration=None,
-                                                     seed=SEED)
+        wNN_params = get_nn_params_from_file(trained_model_file,
+                                             load_best_epoch=False,
+                                             sample_from_iteration=None,
+                                             seed=SEED)
     else:
         wNN_params = None
 
