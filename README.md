@@ -2,16 +2,17 @@
 
 **Daniele Silvestro - 08.05.2025**
 
-All spatial data are provided as `.tif` files or numpy arrays (`.npy` files) assuming matching resolution and extent across all layers.
+To install CAPTAIN v.2 go to [this repository](https://github.com/captain-project/captain2).  
 
 ### Species distribution data
-Examples of habitat suitability maps are provided in the `present_habitat_suitability` folder. These are expected to be the results of species distribution models (SDMs) predicting habitat suitability going from 0 (unsuitable) to 1 (suitable).
+Examples of habitat suitability maps are provided in the `present_habitat_suitability` folder. These are expected to be the results of species distribution models (SDMs) predicting habitat suitability going from 0 (unsuitable) to 1 (suitable). All spatial data are provided as `.tif` files or numpy arrays (`.npy` files) assuming matching resolution and extent across all layers.
+
 
 Future habitat suitability can be used in the model to incorporate the effects of climate change in the analysis (examples in `future_habitat_suitability`). These maps ideally come from running the SDMs trained with present data with future climate and environmental predictors. Alternatively, they can be estimated from within CAPTAIN based on present habitat suitability and future climate and environmental data.
 
 
 ### Environmental layers
-Different environmental layers can be incorporated in the analysis including disturbance (e.g. land use), costs, existing protected areas. The values provided in these layers will be rescaled internally between 0 and 1. It is assumed that larger values represent higher disturbance, higher costs, or higher level of protection, depending on the layer. 
+Different environmental layers can be incorporated in the analysis including disturbance (e.g. land use), costs, existing protected areas. The values provided in these layers should be rescaled between 0 and 1. It is assumed that larger values represent higher disturbance, higher costs, or higher level of protection, depending on the layer. 
 
 
 ### Species traits
