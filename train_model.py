@@ -32,7 +32,7 @@ SEED = parse_str(config["general"]["seed"])
 # policy settings (objectives and reward)
 ext_risk_class = cn.ExtinctioRiskProtectedRangeFuture # cn.ExtinctioRiskProtectedRange
 budget = parse_str(config["policy"]["budget"])  # if budget = None: np.sum(costs) * protection_fraction
-reward = "pareto_mlt"
+reward = parse_str(config["policy"]["reward"])
 
 r_w = parse_str(config["policy"]["reward_weights"])
 r_w = np.round(r_w / np.sum(r_w), 2)
@@ -379,11 +379,12 @@ if config["general"]["run_mode"] == "train":
         print("Setup batch n. %s" % i)
         env_train, config_train = generate_init_env(config, SEED * i)
         env_train._verbose = i == 0 # only job 0 is verbose
+        env_train.feature_set = parse_str(config["policy"]["feature_set"])
         env_train.rewardMode = reward
         env_train.iterations = parse_str(config["general"]["steps"])
         # if budget is None:
         env_train.budget = budget
-        actions_per_step = 1
+        actions_per_step = parse_str(config["general"]["actions_per_step"])
         env_train.reset_init_values()
         env_train.set_calc_reward(True)
         env_train._reward_min_protection = None
@@ -420,7 +421,7 @@ if config["general"]["run_mode"] == "train":
                                                   max_temperature=1000,
                                                   sp_threshold_feature_extraction=1,
                                                   wd_output=results_wd,
-                                                  actions_per_step=1,
+                                                  actions_per_step=parse_str(config["general"]["actions_per_step"]),
                                                   protection_per_step=protection_actions_per_step,
                                                   plot_res_class=tmp_res_plot_class,
                                                   reward_weights=reward_weights,

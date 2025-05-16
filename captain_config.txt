@@ -5,6 +5,7 @@ steps = 30
 run_mode = train
 # starting year = 2020, protection by 2030, outcome at 2050, future suitability at 2090
 protection_time_steps = 10 
+actions_per_step = 1
 epochs = 2
 # fine tune previous model ([files][model_file_name])
 fine_tune = False
@@ -26,7 +27,8 @@ max_protection_level = 1
 # weights on biomass/carbon, biodiversity, cost
 reward_weights = 0 1 0
 add_to_existing_protected_areas = False
-
+reward = pareto_mlt
+feature_set = pareto_mlt_future
 [env_settings]
 round_habitat_suitability = False
 min_cost = 0.1
