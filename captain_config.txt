@@ -1,17 +1,21 @@
 [general]
 seed = 20250507
 batch_size = 3
+# simulation time steps
 steps = 30 
 run_mode = train
-# starting year = 2020, protection by 2030, outcome at 2050, future suitability at 2090
+# e.g. starting year = 2020, protection by 2030, outcome at 2050, future suitability at 2090
 protection_time_steps = 10 
-actions_per_step = 1
-epochs = 2
+# set to None to update features only at time step (faster)
+feature_update_frequency = 100
+# training steps (if run_mode == train)
+epochs = 1
 # fine tune previous model ([files][model_file_name])
 fine_tune = False
+# prediction simulations (if run_mode == predict)
+prediction_runs = 10
 
-# set to reach PROTECTION_TARGET in STEPS
-# features are recomputed only if env.step() happens
+feature_update_per_step = True  
 protection_target = 0.3 
 use_future_sdms = True
 # n of steps to reach future suitability maps (linearly interpolated in between)
@@ -29,6 +33,9 @@ reward_weights = 0 1 0
 add_to_existing_protected_areas = False
 reward = pareto_mlt
 feature_set = pareto_mlt_future
+priority_variable = conservation_status
+
+
 [env_settings]
 round_habitat_suitability = False
 min_cost = 0.1
@@ -73,8 +80,8 @@ risk_weights = -64 -32 -16 -8 -1
 min_protected_cells = None
 
 [files]
-data_dir = full_path/example_data_v2
-models_dir = full_path/example_data_v2
+data_dir = full_path/example_data_captain2
+models_dir = full_path/example_data_captain2
 env_data_dir = environmental_layers
 sdm_data_dir = present_habitat_suitability
 future_sdm_data_dir = future_habitat_suitability

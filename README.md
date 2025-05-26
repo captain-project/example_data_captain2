@@ -27,7 +27,12 @@ Many parameter settings can be changed in the model including:
 * The rules based on which the conservation status of a species can change over time (e.g. increases or decreases linked with population dynamics or range size changes) 
 * The reward system that defines what the model is optimized for
 
-The main parameters are found in the file `captain_config.txt`. 
+The parameters are provided in the file `captain_config.txt`   
+**Note:** you need to edit the example config file to provide the full path to the input files:
+```
+data_dir = full_path/example_data_captain2 
+models_dir = full_path/example_data_captain2
+```
 
 
 ### Train a model

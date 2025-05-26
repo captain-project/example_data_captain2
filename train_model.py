@@ -13,6 +13,7 @@ from captain.utilities import empirical_data_parser as cn_util
 from captain.utilities import sdm_utils as sdm_utils
 from captain.biodivsim import SimGrid as cn_sim_grid
 from captain.utilities.misc import parse_str, get_nn_params_from_file
+from captain.utilities import misc as cn_misc
 import sparse
 import argparse
 import configparser
@@ -21,7 +22,6 @@ p = argparse.ArgumentParser()
 p.add_argument('config_file', type=str, help='config file')
 args = p.parse_args()
 config_file = args.config_file
-
 
 config = configparser.ConfigParser()
 config.read(config_file)
@@ -62,6 +62,9 @@ sdms_f, species_names_f = sdm_utils.get_data_from_list(
 
 # load species traits (migration, sensitivity, growth, conservation status)
 trait_tbl = pd.read_csv(os.path.join(data_wd, config["files"]["trait_tbl_file"]))
+trait_tbl, species_col_name = cn_misc.match_taxa(trait_tbl, species_names)
+
+
 empirical_sensitivity = np.array(trait_tbl['sensitivity_disturbance'])
 growth_rates = np.array(trait_tbl['growth_rate'])
 conservation_status = 5 - np.array(trait_tbl['conservation_status'])
@@ -177,15 +180,21 @@ if budget is None:
     else:
         budget = np.sum(graph_cost) * (protection_target - existing_protection_fraction)
 
-if graph_protection_matrix is not None:
-    protection_steps = protection_target * n_pus - int(np.sum(graph_protection_matrix))
+target_protected_cells = int(np.floor(protection_target * n_pus))
+time_to_protect = parse_str(config["general"]["protection_time_steps"])
+cells_to_be_protected_per_time_step = target_protected_cells / time_to_protect
+
+if parse_str(config["general"]["feature_update_frequency"]) is None:
+    cells_to_be_protected_per_observe_step = cells_to_be_protected_per_time_step
 else:
-    protection_steps = protection_target * n_pus
+    cells_to_be_protected_per_observe_step = np.minimum(
+    parse_str(config["general"]["feature_update_frequency"]), cells_to_be_protected_per_time_step)
 
-protection_actions_per_step = int(np.floor((protection_steps / (
-        parse_str(config["general"]["protection_time_steps"]) - 1)) / 100) * 100)
-print("Protection actions per step:",protection_actions_per_step)
+total_observe_steps = int(parse_str(config["general"]["steps"]) * (
+        target_protected_cells / cells_to_be_protected_per_observe_step))
 
+observe_steps_per_time_step = int(cells_to_be_protected_per_time_step / cells_to_be_protected_per_observe_step)
+cells_to_be_protected_per_observe_step = int(cells_to_be_protected_per_observe_step)
 
 
 #-------- ANALYSIS ---------#
@@ -300,8 +309,8 @@ def generate_init_env(config, seed):
     config = cn.ConfigOptimPolicy(rnd_seed=r_seeds_dict['rnd_config_policy'],
                                   obsMode=1,
                                   # 0: random, 1: full monitor, 2: citizen-science, 3: one-time, 4: value, 5: area
-                                  feature_update_per_step=True,
-                                  steps=protection_steps,
+                                  feature_update_per_step=parse_str(config["general"]["feature_update_per_step"]),
+                                  steps=total_observe_steps,
                                   simulations=1,
                                   observePolicy=1,  # 0: NO-OBSERVE-UPDATE 1: ORACLE 2: PROTECTATONCE
                                   disturbance=-1,
@@ -342,7 +351,7 @@ def generate_init_env(config, seed):
                                   # list of distb_obj, selectivedistb_obj
                                   return_env=True,
                                   ext_risk_obj=ext_risk_obj,
-                                  # here set to 1 because env2d.bioDivGrid.h is already fast-evolved to carrying capcaity
+                                  # here set to 1 because env2d.bioDivGrid.h is already fast-evolved to carrying capacity
                                   max_K_multiplier=1,
                                   suitability=graph_suitability,
                                   future_suitability=graph_future_suitability,
@@ -375,16 +384,17 @@ def generate_init_env(config, seed):
 # train model
 if config["general"]["run_mode"] == "train":
     envList = []
-    for i in range(int(config["general"]["batch_size"])):
+    for i in range(parse_str(config["general"]["batch_size"])):
         print("Setup batch n. %s" % i)
         env_train, config_train = generate_init_env(config, SEED * i)
         env_train._verbose = i == 0 # only job 0 is verbose
         env_train.feature_set = parse_str(config["policy"]["feature_set"])
         env_train.rewardMode = reward
-        env_train.iterations = parse_str(config["general"]["steps"])
+        env_train.iterations = parse_str(config["general"]["steps"]) * observe_steps_per_time_step + 1
         # if budget is None:
         env_train.budget = budget
-        actions_per_step = parse_str(config["general"]["actions_per_step"])
+        actions_per_step = parse_str(config["general"]["feature_update_frequency"]) #actions_per_step
+        env_train.set_max_n_protected_cells(target_protected_cells)
         env_train.reset_init_values()
         env_train.set_calc_reward(True)
         env_train._reward_min_protection = None
@@ -421,46 +431,10 @@ if config["general"]["run_mode"] == "train":
                                                   max_temperature=1000,
                                                   sp_threshold_feature_extraction=1,
                                                   wd_output=results_wd,
-                                                  actions_per_step=parse_str(config["general"]["actions_per_step"]),
-                                                  protection_per_step=protection_actions_per_step,
+                                                  actions_per_step=observe_steps_per_time_step,
+                                                  protection_per_step=cells_to_be_protected_per_observe_step,
                                                   plot_res_class=tmp_res_plot_class,
                                                   reward_weights=reward_weights,
                                                   return_env=True
                                                   )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
