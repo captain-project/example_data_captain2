@@ -36,7 +36,8 @@ reward = parse_str(config["policy"]["reward"])
 
 r_w = parse_str(config["policy"]["reward_weights"])
 r_w = np.round(r_w / np.sum(r_w), 2)
-reward_weights = {'carbon': r_w[0], 'species_risk': r_w[1], 'cost': r_w[2]}
+rewards_variables = parse_str(config["policy"]["rewards_variables"])
+reward_weights = my_dict = {key: value for key, value in zip(rewards_variables, r_w)}
 
 
 # paths, output files
@@ -181,6 +182,10 @@ if budget is None:
         budget = np.sum(graph_cost) * (protection_target - existing_protection_fraction)
 
 target_protected_cells = int(np.floor(protection_target * n_pus))
+
+if graph_protection_matrix is not None:
+    target_protected_cells = target_protected_cells - np.sum(graph_protection_matrix[graph_protection_matrix > 0])
+
 time_to_protect = parse_str(config["general"]["protection_time_steps"])
 cells_to_be_protected_per_time_step = target_protected_cells / time_to_protect
 
