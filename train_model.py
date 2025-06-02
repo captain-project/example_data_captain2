@@ -201,6 +201,9 @@ total_observe_steps = int(parse_str(config["general"]["steps"]) * (
 observe_steps_per_time_step = int(cells_to_be_protected_per_time_step / cells_to_be_protected_per_observe_step)
 cells_to_be_protected_per_observe_step = int(cells_to_be_protected_per_observe_step)
 
+cn_util.plot_env_layers(["Disturbance", "Cost"], [disturbance_layer, cost_layer],
+                        reference_grid_pu_nan, wd=results_wd, fig_s=[6, 5.5])
+
 
 #-------- ANALYSIS ---------#
 
@@ -306,9 +309,9 @@ def generate_init_env(config, seed):
     disturbanceGenerator = cn.FixedEmpiricalDisturbanceGenerator(0)
     selective_disturbanceGenerator = cn.FixedEmpiricalDisturbanceGenerator(0)
     init_disturbance = disturbanceGenerator.updateDisturbance(
-        graph_disturbance * mask_disturbance * parse_str(config["env_settings"]["zero_disturbance"]))
+        graph_disturbance * mask_disturbance * (1 - parse_str(config["env_settings"]["zero_disturbance"])))
     init_selective_disturbance = selective_disturbanceGenerator.updateDisturbance(
-        graph_selective_disturbance * mask_disturbance * parse_str(config["env_settings"]["zero_selective_disturbance"]))
+        graph_selective_disturbance * mask_disturbance * (1 - parse_str(config["env_settings"]["zero_selective_disturbance"])))
 
     # config simulation
     config = cn.ConfigOptimPolicy(rnd_seed=r_seeds_dict['rnd_config_policy'],
@@ -414,8 +417,7 @@ if config["general"]["run_mode"] == "train":
     else:
         wNN_params = None
 
-    tmp_res_plot_class = cn_util.plot_map_class(z=reference_grid_pu_nan)
-
+    tmp_res_plot_class = cn_util.plot_map_class(z=reference_grid_pu_nan, fig_s=[6, 5.5])
     env_tmp = cn.runBatchGeneticStrategyEmpirical(envList,
                                                   epochs=parse_str(config["general"]["epochs"]),
                                                   lr=0.5,
