@@ -1,6 +1,6 @@
 # Example files for CAPTAIN 2.0 (beta)
 
-**Daniele Silvestro - 08.05.2025**
+**Daniele Silvestro - 23.09.2025**
 
 To install CAPTAIN v.2 go to [this repository](https://github.com/captain-project/captain2).  
 
@@ -35,15 +35,42 @@ models_dir = full_path/example_data_captain2
 ```
 
 
-### Train a model
+### Training a model
 
 To train a model you can execute the script `train_model.py` providing the config file with its full path: 
 
 ```
-python train_model.py full_path/captain_config.txt
+python train_model.py full_path/config_train.txt
 
 ```
 
+Note the training a full model might require more epochs than the 100 specified in the example `config_train.txt` file. This can be changed in the config file, section `[general]` to, e.g.
+
+```
+epochs = 1000
+```
+
+A pre-trained example file is included in the [trained_model_example](https://github.com/captain-project/example_data_captain2/tree/main/trained_model_example) folder.
+
+### Predicting conservation priorities with a trained model
+
+After training a model you can run predictions to identify the conservation priority areas.
+
+```
+python captain_predict.py full_path/config_predict.txt
+
+```
+
+**Note:** you need to edit the example config file to provide the full path to the input files and provide the trained model file name.
+
+```
+data_dir = full_path/example_data_captain2 
+models_dir = full_path/example_data_captain2
+trained_model_file = test20250525.log
+
+```
+
+An example of the prediction output is included in the [predictions_example](https://github.com/captain-project/example_data_captain2/tree/main/predictions_example) folder. 
 
 
 

@@ -9,7 +9,7 @@ protection_time_steps = 10
 # set to None to update features only at time step (faster)
 feature_update_frequency = 100
 # training steps (if run_mode == train)
-epochs = 1
+epochs = 100
 # fine tune previous model ([files][model_file_name])
 fine_tune = False
 # prediction simulations (if run_mode == predict)
@@ -34,6 +34,7 @@ add_to_existing_protected_areas = False
 reward = pareto_mlt
 feature_set = pareto_mlt_future
 priority_variable = conservation_status
+nn_nodes = 3 2
 
 
 [env_settings]
