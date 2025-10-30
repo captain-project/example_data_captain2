@@ -29,6 +29,7 @@ plot_env_states = False
 budget = None
 max_protection_level = 1
 # weights on biomass/carbon, biodiversity, cost
+rewards_variables = carbon biodiversity cost
 reward_weights = 0 1 0
 add_to_existing_protected_areas = False
 reward = pareto_mlt
