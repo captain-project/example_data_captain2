@@ -100,7 +100,7 @@ if parse_str(config["species_settings"]["use_empirical_dispersal_rates"]):
         emp_dispersal_rates) * parse_str(config["species_settings"]["mean_dispersal_rate"])
 
 elif parse_str(config["species_settings"]["variable_dispersal_rates"]):
-    dispersal_rates = np.exp(np.linspace(-2, 2, None)) #[::-1]
+    dispersal_rates = np.exp(np.linspace(-2, 2, n_species)) #[::-1]
     dispersal_rates = dispersal_rates / np.mean(
         dispersal_rates) * parse_str(config["species_settings"]["mean_dispersal_rate"])
 
